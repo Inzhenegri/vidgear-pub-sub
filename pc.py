@@ -9,7 +9,7 @@ options = {
 }
 
 client = NetGear(
-    address='127.0.0.1',
+    address='192.168.11.145',
     port='5454',
     pattern=2,
     receive_mode=True,
@@ -20,14 +20,16 @@ client = NetGear(
 
 while True:
     frame = client.recv()
-    print(frame)
+    # print(frame)
 
     if frame is None:
         break
 
     cv2.imshow('out', frame)
 
-    if cv2.waitKey(1) == ord('q'):
+    key = cv2.waitKey(1)
+
+    if key == ord('q'):
         break
 
 cv2.destroyAllWindows()
