@@ -4,29 +4,14 @@ from vidgear.gears import VideoGear
 import cv2
 
 
-options_pigear = {
-    "exposure_mode": "off",
-    "iso": 100,
-    # "exposure_compensation": -25,
-    # "awb_mode": "horizon",
-    # "sensor_mode": 0,
-}
-
 options_netgear = {
     'flag': 0,
     'copy': False,
     'track': False,
-    # frame compression
-    "jpeg_compression_quality": 50,
+    "jpeg_compression_quality": 80,
     'jpeg_compression_fastupsample': True
 }
 
-# stream = PiGear(
-#     resolution=(320, 240),
-#     framerate=60,
-#     logging=True,
-#     **options_pigear
-# ).start()
 stream = cv2.VideoCapture(0)
 
 server = NetGear(
@@ -52,5 +37,5 @@ while True:
     except KeyboardInterrupt:
         break
 
-# stream.stop()
+stream.release()
 server.close()

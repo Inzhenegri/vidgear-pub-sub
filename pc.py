@@ -1,23 +1,12 @@
-from vidgear.gears import VideoGear
 from vidgear.gears import NetGear
-from vidgear.gears import ScreenGear
-from vidgear.gears.asyncio import WebGear
-from vidgear.gears.asyncio.helper import reducer
 import cv2
-import uvicorn
 import asyncio
 
 
 options = {
+    'flag': 0,
     'copy': False,
     'track': False
-}
-
-options_webgear = {
-    'frame_size_reduction': 40,
-    'frame_jpeg_quality': 100,
-    'frame_jpeg_optimize': True,
-    'frame_jpeg_progressive': False
 }
 
 client = NetGear(
@@ -31,29 +20,23 @@ client = NetGear(
     **options
 )
 
-web = WebGear(logging=True, **options_webgear)
-
-async def frame_producer():
-    stream = ScreenGear().start()
+async def start():
     while True:
         frame = client.recv()
 
         if frame is None:
             break
 
-        frame = await reducer(frame=frame, percentage=30)
-        encoded_image = cv2.imencode(ext='.jpg', img=frame)[1].tobytes()
+        cv2.imshow('frame', frame)
 
-        yield (b"--frame\r\nContent-Type:video/jpeg2000\r\n\r\n" + encoded_image + b"\r\n")
+        key = cv2.waitKey(1)
+        if key == ord('q'):
+            break
+
         await asyncio.sleep(0.00001)
 
-    stream.release()
-    
 
-web.config['generator'] = frame_producer
-uvicorn.run(app=web(), host='localhost', port=8000)
-
-web.shutdown()
+asyncio.run(main=start())
 
 cv2.destroyAllWindows()
-
+client.close()
